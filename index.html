@@ -9,6 +9,10 @@
             margin: 0;
             overflow: hidden;
             background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         #canvas {
             position: absolute;
@@ -16,10 +20,18 @@
             width: 100vw;
             height: 100vh;
         }
+        #playButton {
+            position: absolute;
+            z-index: 10;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <audio id="music" autoplay loop>
+    <button id="playButton">Play Music</button>
+    <audio id="music" loop>
         <source src="timber.mp3" type="audio/mpeg">
     </audio>
     
@@ -29,6 +41,17 @@
         const ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+
+        const music = document.getElementById("music");
+        const playButton = document.getElementById("playButton");
+
+        function startMusic() {
+            music.play().catch(err => console.log("Autoplay failed: ", err));
+            playButton.style.display = "none";
+        }
+
+        playButton.addEventListener("click", startMusic);
+        document.addEventListener("click", startMusic, { once: true });
 
         const images = [];
 
