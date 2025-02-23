@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timber Image Playground</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        #canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <audio id="music" autoplay loop>
+        <source src="timber.mp3" type="audio/mpeg">
+    </audio>
+    
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const images = [];
+
+        function addImage(url, x, y, size, rotation) {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => {
+                const originalSize = Math.min(img.width, img.height);
+                images.push({ img, x, y, size: size || originalSize, rotation });
+                draw();
+            };
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            images.forEach(({ img, x, y, size, rotation }) => {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(rotation * Math.PI / 180);
+                ctx.drawImage(img, -size / 2, -size / 2, size, size);
+                ctx.restore();
+            });
+        }
+
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            draw();
+        });
+
+        // Add the requested image centered with its original size
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        addImage('ilickeditsoitsmine.jpg', centerX, centerY, null, 0);
+    </script>
+</body>
+</html>
