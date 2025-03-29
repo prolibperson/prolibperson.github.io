@@ -50,7 +50,8 @@
             padding: 1rem 0;
             width: 80%;
             max-width: 800px;
-            justify-content: space-around;
+            justify-content: center;
+            gap: 2rem;
         }
 
         nav a {
@@ -60,6 +61,9 @@
             padding: 0.5rem 1rem;
             border-radius: 5px;
             transition: background-color 0.3s, color 0.3s;
+            display: block;
+            text-align: center;
+            min-width: 100px;
         }
 
         nav a:hover, nav a.active {
@@ -167,10 +171,14 @@
             font-size: 1.1rem;
         }
 
-        .audio-controls {
+        .audio-container {
             position: fixed;
             bottom: 1rem;
             right: 1rem;
+            z-index: 100;
+        }
+
+        .audio-controls {
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 50%;
             width: 50px;
@@ -179,13 +187,66 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 100;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
         .audio-controls i {
             font-size: 1.5rem;
             color: white;
+        }
+
+        .volume-slider-container {
+            position: absolute;
+            bottom: 60px;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 10px;
+            width: 40px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .audio-container:hover .volume-slider-container {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 100px;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            outline: none;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            margin: 0;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #64b5f6;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #64b5f6;
+            cursor: pointer;
         }
 
         @keyframes fadeIn {
@@ -201,6 +262,17 @@
             .profile-image {
                 width: 200px;
                 height: 200px;
+            }
+            
+            nav ul {
+                width: 100%;
+                gap: 0.5rem;
+            }
+            
+            nav a {
+                min-width: auto;
+                padding: 0.5rem;
+                font-size: 1rem;
             }
         }
     </style>
@@ -226,7 +298,7 @@
                     <p>
                         15 year old C and C++ developer, GunZ: The Duel private developer, 
                         currently learning about operating system kernel development, 
-                        3d graphics, and reverse engineering
+                        3d graphics, and reverse engineering.
                     </p>
                 </div>
             </div>
@@ -238,7 +310,7 @@
             <div class="project-card">
                 <h3>AstraeaOS</h3>
                 <p>
-                    My own from scratch x86_64 operating system kernel, using limine as the bootloader. Currently has access to a raw framebuffer, has its own font renderer, ps/2 keyboard driver, a fully working shell and more.
+                    My current proudest project. My own from scratch x86_64 operating system kernel, using limine as the bootloader. Currently has access to a raw framebuffer, has its own font renderer, PS/2 keyboard driver, a fully working shell and more.
                 </p>
                 <a href="https://github.com/prolibperson/Astraea" target="_blank">View on GitHub <i class="fab fa-github"></i></a>
             </div>
@@ -246,7 +318,7 @@
             <div class="project-card">
                 <h3>PEngine</h3>
                 <p>
-                    My own from scratch DirectX 11 engine, made around a year ago as a learning project, still very bare-bones and messy but still being worked on! Currently supports loading from an obj file, kind of loads materials from an mtl file, has a camera that you can move, and etc! 
+                    My own from scratch DirectX 11 engine, made around a year ago as a learning project, still very bare-bones and messy but still being worked on! Currently supports loading from an OBJ file, kind of loads materials from an MTL file, has a camera that you can move, and etc! 
                 </p>
                 <a href="https://github.com/prolibperson/PEngine" target="_blank">View on GitHub <i class="fab fa-github"></i></a>
             </div>
@@ -254,7 +326,7 @@
             <div class="project-card">
                 <h3>prolib-1.5</h3>
                 <p>
-                    This is my own GunZ: The Duel released code-base, it is a fixed version of the Jetman source, as it came released with a bunch of problems. It also includes a few features I have made, very popular choice for a source nowadays :D. 
+                    This is my own GunZ: The Duel released code-base, it is a fixed version of the Jetman source, as it came released with a bunch of problems. It also includes a few features I have made, very popular choice for a source nowadays.
                 </p>
                 <a href="https://github.com/prolibperson/prolib-1.5" target="_blank">View on GitHub <i class="fab fa-github"></i></a>
             </div>
@@ -287,8 +359,13 @@
         </section>
     </main>
     
-    <div class="audio-controls" id="audio-toggle">
-        <i class="fas fa-volume-up" id="audio-icon"></i>
+    <div class="audio-container">
+        <div class="volume-slider-container">
+            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volume-slider">
+        </div>
+        <div class="audio-controls" id="audio-toggle">
+            <i class="fas fa-volume-mute" id="audio-icon"></i>
+        </div>
     </div>
     
     <audio id="background-music" loop>
@@ -314,24 +391,70 @@
         const audioElement = document.getElementById('background-music');
         const audioToggle = document.getElementById('audio-toggle');
         const audioIcon = document.getElementById('audio-icon');
+        const volumeSlider = document.getElementById('volume-slider');
         let isPlaying = false;
+        
+        // Set initial volume to 50%
+        audioElement.volume = 0.5;
         
         function toggleMusic() {
             if (isPlaying) {
                 audioElement.pause();
                 audioIcon.classList.remove('fa-volume-up');
+                audioIcon.classList.remove('fa-volume-down');
                 audioIcon.classList.add('fa-volume-mute');
             } else {
                 audioElement.play().catch(error => {
                     console.log('Playback prevented by browser. User interaction needed.');
                 });
-                audioIcon.classList.remove('fa-volume-mute');
-                audioIcon.classList.add('fa-volume-up');
             }
             isPlaying = !isPlaying;
+            updateVolumeIcon();
+        }
+
+        function updateVolumeIcon() {
+            audioIcon.classList.remove('fa-volume-up');
+            audioIcon.classList.remove('fa-volume-down');
+            audioIcon.classList.remove('fa-volume-mute');
+    
+            if (!isPlaying) {
+                audioIcon.classList.add('fa-volume-mute');
+                return;
+            }
+    
+            const volume = audioElement.volume;
+            if (volume > 0.5) {
+                audioIcon.classList.add('fa-volume-up');
+            } else if (volume > 0) {
+                audioIcon.classList.add('fa-volume-down');
+            } else {
+                audioIcon.classList.add('fa-volume-mute');
+            }
+        }
+
+        function positionVolumeSlider() {
+            const audioToggle = document.getElementById('audio-toggle');
+            const volumeSliderContainer = document.querySelector('.volume-slider-container');
+    
+            const toggleRect = audioToggle.getBoundingClientRect();
+            const containerRect = audioToggle.parentElement.getBoundingClientRect();
+
+            const toggleCenterX = toggleRect.left + (toggleRect.width / 2) - containerRect.left;
+            const sliderWidth = volumeSliderContainer.offsetWidth;
+
+            volumeSliderContainer.style.right = `${audioToggle.parentElement.offsetWidth - toggleCenterX - (sliderWidth / 2)}px`;
         }
         
+        document.addEventListener('DOMContentLoaded', positionVolumeSlider);
+        window.addEventListener('resize', positionVolumeSlider);
+
         audioToggle.addEventListener('click', toggleMusic);
+        
+        volumeSlider.addEventListener('input', function() {
+            const volumeValue = this.value / 100;
+            audioElement.volume = volumeValue;
+            updateVolumeIcon();
+        });
         
         function setProfileImage(imageUrl) {
             const profileImage = document.getElementById('profile-image');
