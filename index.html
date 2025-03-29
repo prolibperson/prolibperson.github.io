@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>prolib</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .gradient-border {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            filter: blur(50px);
+            opacity: 0.5;
+        }
+
+        nav {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            padding: 1rem 0;
+            width: 80%;
+            max-width: 800px;
+            justify-content: space-around;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            display: none;
+            min-height: 80vh;
+        }
+
+        section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .profile-image {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 3px solid white;
+        }
+
+        .bio {
+            max-width: 700px;
+            line-height: 1.6;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .project-card {
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-card h3 {
+            margin-bottom: 1rem;
+            color: #64b5f6;
+        }
+
+        .project-card a {
+            color: #90caf9;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(100, 181, 246, 0.2);
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .project-card a:hover {
+            background-color: rgba(100, 181, 246, 0.4);
+        }
+
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .contact-method {
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .contact-method h3 {
+            margin-bottom: 1rem;
+            color: #64b5f6;
+        }
+
+        .contact-method p {
+            font-size: 1.1rem;
+        }
+
+        .audio-controls {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .audio-controls i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .contact-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-image {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="gradient-border" id="gradient-border"></div>
+    
+    <nav>
+        <ul>
+            <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+            <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
+            <li><a href="#contact" class="nav-link" data-section="contact">Contact Me</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <section id="home" class="active">
+            <div class="center-content">
+                <img src="/api/placeholder/600/600" alt="Profile Image" class="profile-image" id="profile-image">
+                <div class="bio" id="bio-text">
+                    <h1>prolib</h1>
+                    <p>
+                        15 year old C and C++ developer, GunZ: The Duel private developer, 
+                        currently learning about operating system kernel development, 
+                        3d graphics, and reverse engineering
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="projects">
+            <h2 style="text-align: center; margin-bottom: 2rem;">My Projects</h2>
+            
+            <div class="project-card">
+                <h3>AstraeaOS</h3>
+                <p>
+                    My own from scratch x86_64 operating system kernel, using limine as the bootloader. Currently has access to a raw framebuffer, has its own font renderer, ps/2 keyboard driver, a fully working shell and more.
+                </p>
+                <a href="https://github.com/prolibperson/Astraea" target="_blank">View on GitHub <i class="fab fa-github"></i></a>
+            </div>
+            
+            <div class="project-card">
+                <h3>PEngine</h3>
+                <p>
+                    My own from scratch DirectX 11 engine, made around a year ago as a learning project, still very bare-bones and messy but still being worked on! Currently supports loading from an obj file, kind of loads materials from an mtl file, has a camera that you can move, and etc! 
+                </p>
+                <a href="https://github.com/prolibperson/PEngine" target="_blank">View on GitHub <i class="fab fa-github"></i></a>
+            </div>
+            
+            <div class="project-card">
+                <h3>prolib-1.5</h3>
+                <p>
+                    This is my own GunZ: The Duel released code-base, it is a fixed version of the Jetman source, as it came released with a bunch of problems. It also includes a few features I have made, very popular choice for a source nowadays :D. 
+                </p>
+                <a href="https://github.com/prolibperson/prolib-1.5" target="_blank">View on GitHub <i class="fab fa-github"></i></a>
+            </div>
+        </section>
+        
+        <section id="contact">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Contact Me</h2>
+            
+            <div class="contact-methods">
+                <div class="contact-method">
+                    <h3><i class="fab fa-discord"></i> Discord</h3>
+                    <p>prolib</p>
+                </div>
+                
+                <div class="contact-method">
+                    <h3><i class="fas fa-envelope"></i> Email</h3>
+                    <p>prolib69420@gmail.com</p>
+                </div>
+                
+                <div class="contact-method">
+                    <h3><i class="fas fa-signal"></i> Signal</h3>
+                    <p>prolib.01</p>
+                </div>
+                
+                <div class="contact-method">
+                    <h3><i class="fab fa-twitter"></i> Twitter</h3>
+                    <p>prolibperson</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div class="audio-controls" id="audio-toggle">
+        <i class="fas fa-volume-up" id="audio-icon"></i>
+    </div>
+    
+    <audio id="background-music" loop>
+        <source src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <script>
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('section').forEach(el => el.classList.remove('active'));
+                
+                this.classList.add('active');
+                
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+        
+        const audioElement = document.getElementById('background-music');
+        const audioToggle = document.getElementById('audio-toggle');
+        const audioIcon = document.getElementById('audio-icon');
+        let isPlaying = false;
+        
+        function toggleMusic() {
+            if (isPlaying) {
+                audioElement.pause();
+                audioIcon.classList.remove('fa-volume-up');
+                audioIcon.classList.add('fa-volume-mute');
+            } else {
+                audioElement.play().catch(error => {
+                    console.log('Playback prevented by browser. User interaction needed.');
+                });
+                audioIcon.classList.remove('fa-volume-mute');
+                audioIcon.classList.add('fa-volume-up');
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        audioToggle.addEventListener('click', toggleMusic);
+        
+        function setProfileImage(imageUrl) {
+            const profileImage = document.getElementById('profile-image');
+            if (imageUrl && imageUrl.trim() !== '') {
+                profileImage.src = imageUrl;
+            }
+        }
+        
+        function setBackgroundMusic(musicUrl) {
+            const music = document.getElementById('background-music');
+            if (musicUrl && musicUrl.trim() !== '') {
+                music.src = musicUrl;
+            }
+        }
+        
+        function setGradient() {
+            const profileImage = document.getElementById('profile-image');
+            const gradientBorder = document.getElementById('gradient-border');
+            
+            gradientBorder.style.backgroundImage = `url(${profileImage.src})`;
+        }
+        
+        document.getElementById('profile-image').addEventListener('load', setGradient);
+        
+        setProfileImage('https://raw.githubusercontent.com/prolibperson/prolibperson.github.io/main/381a00490dcc78e32712b33118afbf30.png');
+        setBackgroundMusic('https://raw.githubusercontent.com/prolibperson/prolibperson.github.io/main/x-fighter.mp3');
+    </script>
+</body>
+</html>
